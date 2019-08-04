@@ -58,17 +58,17 @@
   };
 </script>
 
-  <meta name="description" content="Java 集合">
+  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hello World">
 <meta property="og:url" content="http://yoursite.com/2019/08/04/hello-world/index.html">
 <meta property="og:site_name" content="卡夫">
-<meta property="og:description" content="Java 集合">
+<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-04T05:20:16.806Z">
+<meta property="og:updated_time" content="2019-08-04T05:20:54.242Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Java 集合">
+<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
   <link rel="canonical" href="http://yoursite.com/2019/08/04/hello-world/">
 
 
@@ -249,7 +249,7 @@
                 
               
 
-              <time title="创建时间：2019-08-04 13:20:16" itemprop="dateCreated datePublished" datetime="2019-08-04T13:20:16+08:00">2019-08-04</time>
+              <time title="创建时间：2019-08-04 13:20:54" itemprop="dateCreated datePublished" datetime="2019-08-04T13:20:54+08:00">2019-08-04</time>
             </span>
           
 
@@ -264,81 +264,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Java 集合</p>
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
 <a id="more"></a>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
 
-<hr>
-<p>1.Collection<br>    –List(存取有序，有索引，可以重复)<br>        ArrayList<br>            底层是数组实现的，线程不安全，查找和修改快，增和删比较慢<br>        LinkedList<br>            底层是链表实现的，线程不安全，增和删比较快，查找和修改比较慢<br>        Vector<br>            底层是数组实现的，线程安全，增删改查都慢<br>        运用：<br>            如果查找和修改多，用ArrayList<br>            如果增和删多，用LinkedList<br>            如果都多，用ArrayList</p>
-<pre><code>--Set(存取无序，无索引，不可以重复)
-    HashSet 
-        底层是哈希算法实现
-    LinketHashSet
-        底层是链表实现，但是也是可以保证元素唯一，和HashSet原理一样
-    TreeSet
-        底层是二叉树算法实现的(左小右大)
-        一般在开发的时候不需要对存储的元素排序，所以在开发的时候大多
-        使用HashSet，HashSet的效率比较高</code></pre><p>面试题：<br>TreeSet有几种排序方式，和几种排序方式的区别?<br>    * a.自然顺序(Comparable)<br>        * TreeSet类的add()方法中会把存入的对象提升为Comparable类型<br>        * 调用对象的compareTo()方法和集合中的对象比较<br>        * 根据compareTo()方法返回的结果进行存储<br>    * b.比较器顺序(Comparator)<br>        * 创建TreeSet的时候可以制定 一个Comparator<br>        * 如果传入了Comparator的子类对象, 那么TreeSet就会按照比较器中的顺序排序<br>        * add()方法内部会自动调用Comparator接口中compare()方法排序<br>        * 调用的对象是compare方法的第一个参数,集合中的对象是compare方法的第二个参数<br>    * c.两种方式的区别<br>        * TreeSet构造函数什么都不传, 默认按照类中Comparable的顺序(没有就报错ClassCastException)<br>        * TreeSet如果传入Comparator, 就优先按照Comparator</p>
-<p>Map<br>    –HashMap<br>        底层是哈希算法，针对键<br>    –LinkedHashMap<br>        底层是链表，针对键<br>    –TreeMap<br>        底层是二叉树算法，针对键<br>    开发中用HashMap比较多</p>
-<p>2.Vector和ArrayList的区别<br>        Vector是线程安全的,效率低<br>        ArrayList是线程不安全的,效率高<br>        共同点:都是数组实现的<br>ArrayList和LinkedList的区别<br>        ArrayList底层是数组结果,查询和修改快<br>        LinkedList底层是链表结构的,增和删比较快,查询和修改比较慢<br>        共同点:都是线程不安全的</p>
-<p>3.* 普通for循环,可以删除,但是索引要–</p>
-<ul>
-<li>迭代器,可以删除,但是必须使用迭代器自身的remove方法,否则会出现并发修改异常</li>
-<li>增强for循环不能删除</li>
-</ul>
-<p>4.集合框架(HashSet如何保证元素唯一性的原理)</p>
-<ul>
-<li>1.HashSet原理<ul>
-<li>我们使用Set集合都是需要去掉重复元素的, 如果在存储的时候逐个equals()比较, 效率较低,哈希算法提高了去重复的效率, 降低了使用equals()方法的次数</li>
-<li>当HashSet调用add()方法存储对象的时候, 先调用对象的hashCode()方法得到一个哈希值, 然后在集合中查找是否有哈希值相同的对象<ul>
-<li>如果没有哈希值相同的对象就直接存入集合</li>
-<li>如果有哈希值相同的对象, 就和哈希值相同的对象逐个进行equals()比较,比较结果为false就存入, true则不存</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>2.将自定义类的对象存入HashSet去重复<ul>
-<li>类中必须重写hashCode()和equals()方法</li>
-<li>hashCode(): 属性相同的对象返回值必须相同, 属性不同的返回值尽量不同(提高效率)</li>
-<li>equals(): 属性相同返回true, 属性不同返回false,返回false的时候存储</li>
-</ul>
-</li>
-</ul>
-<p>5.</p>
-<ul>
-<li><p>1.List</p>
-<ul>
-<li>a.普通for循环, 使用get()逐个获取</li>
-<li>b.调用iterator()方法得到Iterator, 使用hasNext()和next()方法</li>
-<li>c.增强for循环, 只要可以使用Iterator的类都可以用</li>
-<li>d.Vector集合可以使用Enumeration的hasMoreElements()和nextElement()方法</li>
-</ul>
-</li>
-<li><p>2.Set</p>
-<ul>
-<li>a.调用iterator()方法得到Iterator, 使用hasNext()和next()方法</li>
-<li>b.增强for循环, 只要可以使用Iterator的类都可以用</li>
-</ul>
-</li>
-<li><p>3.普通for循环,增强for循环是否可以在遍历的过程中删除 ?<br>普通for循环在遍历集合过程中可以进行删除,只能少量删除,但是循环的次数会减少,造成结果不准确<br>大量删除会报IndexOutOfBoundsException异常<br>增强for循环在遍历过程中进行删除,会报ConcurrentModificationException异常(并发修改异常)</p>
-</li>
-</ul>
-<p>6.* A:Map接口概述<br>        * 将键映射到值的对象<br>        * 一个映射不能包含重复的键<br>        * 每个键最多只能映射到一个值</p>
-<ul>
-<li>B:Map接口和Collection接口的不同<ul>
-<li>Map是双列的,Collection是单列的</li>
-<li>Map的键唯一,Collection的子体系Set是唯一的</li>
-<li>Map集合的数据结构值针对键有效，跟值无关;Collection集合的数据结构是针对元素有效</li>
-</ul>
-</li>
-</ul>
-<p>7.面试题</p>
-<ul>
-<li>HashMap和Hashtable的区别<ul>
-<li>Hashtable是JDK1.0版本出现的,是线程安全的,效率低,HashMap是JDK1.2版本出现的,是线程不安全的,效率高</li>
-<li>Hashtable不可以存储null键和null值,HashMap可以存储null键和null值</li>
-</ul>
-</li>
-</ul>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 
     </div>
 
@@ -387,8 +326,17 @@
 
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
 
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -427,6 +375,23 @@
 
         </div>
       </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
 
     </div>
   </aside>
