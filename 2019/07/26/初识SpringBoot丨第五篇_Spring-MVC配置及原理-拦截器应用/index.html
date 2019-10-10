@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="Spring Boot有许多包含Spring MVC的启动器。请注意，一些启动器包含对Spring MVC的依赖，而不是直接包含它。本节回答有关Spring MVC和Spring Boot的常见问题。  Spring Boot为Spring MVC提供自动配置，适用于大多数应用程序。">
+<meta name="keywords" content="java,Spring,SpringMVC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识SpringBoot丨第五篇：Spring MVC配置及原理 &amp; 拦截器应用">
+<meta property="og:url" content="http://yoursite.com/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/index.html">
+<meta property="og:site_name" content="卡夫">
+<meta property="og:description" content="Spring Boot有许多包含Spring MVC的启动器。请注意，一些启动器包含对Spring MVC的依赖，而不是直接包含它。本节回答有关Spring MVC和Spring Boot的常见问题。  Spring Boot为Spring MVC提供自动配置，适用于大多数应用程序。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/1564040688664.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/note.png">
+<meta property="og:updated_time" content="2019-10-10T14:35:20.689Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识SpringBoot丨第五篇：Spring MVC配置及原理 &amp; 拦截器应用">
+<meta name="twitter:description" content="Spring Boot有许多包含Spring MVC的启动器。请注意，一些启动器包含对Spring MVC的依赖，而不是直接包含它。本节回答有关Spring MVC和Spring Boot的常见问题。  Spring Boot为Spring MVC提供自动配置，适用于大多数应用程序。">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/1564040688664.png">
+  <link rel="canonical" href="http://yoursite.com/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>初识SpringBoot丨第五篇：Spring MVC配置及原理 & 拦截器应用 | 卡夫</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">卡夫</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+    </ul>
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/kafu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="卡夫">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">初识SpringBoot丨第五篇：Spring MVC配置及原理 & 拦截器应用
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-26 16:32:59" itemprop="dateCreated datePublished" datetime="2019-07-26T16:32:59+08:00">2019-07-26</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-10 22:35:20" itemprop="dateModified" datetime="2019-10-10T22:35:20+08:00">2019-10-10</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>Spring Boot有许多包含Spring MVC的启动器。请注意，一些启动器包含对Spring MVC的依赖，而不是直接包含它。本节回答有关Spring MVC和Spring Boot的常见问题。</p>
+</blockquote>
+<p>Spring Boot为Spring MVC提供自动配置，适用于大多数应用程序。</p>
+<a id="more"></a>
+
+<p>自动配置在Spring的默认值之上添加了以下功能：</p>
+<ul>
+<li><p>包含<code>ContentNegotiatingViewResolver</code>和<code>BeanNameViewResolver</code>豆类。</p>
+</li>
+<li><p>支持提供静态资源，包括对WebJars的支持（ <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-spring-mvc-static-content" target="_blank" rel="noopener">官方文档介绍</a>））。</p>
+</li>
+<li><p>自动注册<code>Converter</code>，<code>GenericConverter</code>和<code>Formatter</code>bean类。</p>
+<ul>
+<li><p>Converter：转换器；  public String hello(User user)：类型转换使用Converter</p>
+</li>
+<li><p><code>Formatter</code>  格式化器；  2017.12.17===Date；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line">	<span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.mvc"</span>, name = <span class="string">"date-format"</span>)<span class="comment">//在文件中配置日期格式化的规则</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Formatter&lt;Date&gt; <span class="title">dateFormatter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> DateFormatter(<span class="keyword">this</span>.mvcProperties.getDateFormat());<span class="comment">//日期格式化组件</span></span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>==自己添加的格式化器转换器，我们只需要放在容器中即可==</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>支持<code>HttpMessageConverters</code>（ <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-spring-mvc-message-converters" target="_blank" rel="noopener">官方文档介绍</a>）。</p>
+<ul>
+<li><p>HttpMessageConverter：SpringMVC用来转换Http请求和响应的；User—Json；</p>
+</li>
+<li><p><code>HttpMessageConverters</code> 是从容器中确定；获取所有的HttpMessageConverter；</p>
+<p>==自己给容器中添加HttpMessageConverter，只需要将自己的组件注册容器中（@Bean,@Component）==</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>自动注册<code>MessageCodesResolver</code>（ <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-spring-message-codes" target="_blank" rel="noopener">官方文档介绍</a>）。</p>
+</li>
+<li><p>静态<code>index.html</code>支持。</p>
+</li>
+<li><p>自定义<code>Favicon</code>支持（<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-spring-mvc-favicon" target="_blank" rel="noopener">官方文档介绍</a>）。</p>
+</li>
+<li><p>自动使用<code>ConfigurableWebBindingInitializer</code>bean（ <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-spring-mvc-web-binding-initializer" target="_blank" rel="noopener">官方文档介绍</a>）。</p>
+<p>==我们可以配置一个ConfigurableWebBindingInitializer来替换默认的；（添加到容器）==</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">初始化WebDataBinder；</span><br><span class="line">请求数据=====JavaBean；</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>如果您想保留Spring Boot MVC功能并且想要添加其他 <a href="https://docs.spring.io/spring/docs/5.1.8.RELEASE/spring-framework-reference/web.html#mvc" target="_blank" rel="noopener">MVC配置</a>（拦截器，格式化程序，视图控制器和其他功能），您可以添加自己的<code>@Configuration</code>类类型<code>WebMvcConfigurer</code>但<strong>不需要</strong> <code>@EnableWebMvc</code>。如果您希望提供，或的 自定义实例<code>RequestMappingHandlerMapping</code>，则可以声明 实例以提供此类组件。<code>RequestMappingHandlerAdapter</code> <code>ExceptionHandlerExceptionResolver</code> <code>WebMvcRegistrationsAdapter</code></p>
+<p>如果您想完全控制Spring MVC，可以添加自己的<code>@Configuration</code> 注释<code>@EnableWebMvc</code>。</p>
+<h2 id="扩展SpringMvc"><a href="#扩展SpringMvc" class="headerlink" title="扩展SpringMvc"></a>扩展SpringMvc</h2><p>在springboot默认mvc配置下，再自己扩展其配置工功能；最终效果：SpringMVC的自动配置和我们的扩展配置都会起作用；</p>
+<h3 id="1、编写一个springmvc-xml文件"><a href="#1、编写一个springmvc-xml文件" class="headerlink" title="1、编写一个springmvc.xml文件"></a>1、编写一个springmvc.xml文件</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">mvc:view-controller</span> <span class="attr">path</span>=<span class="string">"/hello"</span> <span class="attr">view-name</span>=<span class="string">"success"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mvc:interceptors</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mvc:interceptor</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">mvc:mapping</span> <span class="attr">path</span>=<span class="string">"/hello"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">bean</span>&gt;</span><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">mvc:interceptor</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mvc:interceptors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="编写一个配置类（-Configuration）"><a href="#编写一个配置类（-Configuration）" class="headerlink" title="编写一个配置类（@Configuration）"></a>编写一个配置类（@Configuration）</h3><p>改配置类是WebMvcConfigurationSupport类型；不能标注@EnableWebMvc（使用该注解代表将springboot默认配置失效）;</p>
+<p>springboot 2.0前：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyMvcConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcAutoConfigurationAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewControllers</span><span class="params">(ViewControllerRegistry registry)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//浏览器发送 /shawn请求来到success页面</span></span><br><span class="line">        registry.addViewController(<span class="string">"/shawn"</span>).setViewName(<span class="string">"success"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>spring boot2.0  继承WebMvcAutoConfigurationAdapter类已经过时:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//实现WebMvcConfigurer可以来扩展SpringMVC的功能（建议）</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyMvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewControllers</span><span class="params">(ViewControllerRegistry registry)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//浏览器发送 /shawn请求来到success页面</span></span><br><span class="line">        registry.addViewController(<span class="string">"/shawn"</span>).setViewName(<span class="string">"success"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line"><span class="comment">//继承WebMvcConfigurationSupport可以来扩展SpringMVC的功能,同时也相当于使用了@EnableWebMvc注解，springboot默认配置全部失效</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyMvcConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurationSupport</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewControllers</span><span class="params">(ViewControllerRegistry registry)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//浏览器发送 /shawn请求来到success页面</span></span><br><span class="line">        registry.addViewController(<span class="string">"/shawn"</span>).setViewName(<span class="string">"success"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原理：</p>
+<h4 id="1）、WebMvcAutoConfiguration是SpringMVC的自动配置类"><a href="#1）、WebMvcAutoConfiguration是SpringMVC的自动配置类" class="headerlink" title="1）、WebMvcAutoConfiguration是SpringMVC的自动配置类"></a>1）、WebMvcAutoConfiguration是SpringMVC的自动配置类</h4><h4 id="2）、在做其他自动配置时会导入；-Import-WebMvcAutoConfiguration-EnableWebMvcConfiguration-class"><a href="#2）、在做其他自动配置时会导入；-Import-WebMvcAutoConfiguration-EnableWebMvcConfiguration-class" class="headerlink" title="2）、在做其他自动配置时会导入；@Import({WebMvcAutoConfiguration . EnableWebMvcConfiguration .class})"></a>2）、在做其他自动配置时会导入；@Import({WebMvcAutoConfiguration . EnableWebMvcConfiguration .class})</h4><img src="/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/1564040688664.png">
+
+<p><strong>例如参照添加视图方法addViewControllers功能来入手</strong></p>
+<ol>
+<li>从源码看EnableWebMvcConfiguration 继承了DelegatingWebMvcConfiguration类</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class DelegatingWebMvcConfiguration extends WebMvcConfigurationSupport &#123;</span><br><span class="line"></span><br><span class="line">    private final WebMvcConfigurerComposite configurers = new  WebMvcConfigurerComposite();</span><br><span class="line">    public DelegatingWebMvcConfiguration() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //从容器中获取所有ebMvcConfigurer</span><br><span class="line">    @Autowired(</span><br><span class="line">        required = false</span><br><span class="line">    )</span><br><span class="line">    public void setConfigurers(List&lt;WebMvcConfigurer&gt; configurers) &#123;</span><br><span class="line">        if (!CollectionUtils.isEmpty(configurers)) &#123;</span><br><span class="line">            this.configurers.addWebMvcConfigurers(configurers);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //设置视图方法</span><br><span class="line">    protected void addViewControllers(ViewControllerRegistry registry) &#123;</span><br><span class="line">        this.configurers.addViewControllers(registry);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>点击该类addViewControllers 实现方法，进入WebMvcConfigurerComposite类中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WebMvcConfigurerComposite</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;WebMvcConfigurer&gt; delegates = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewControllers</span><span class="params">(ViewControllerRegistry registry)</span> </span>&#123;</span><br><span class="line">        Iterator var2 = <span class="keyword">this</span>.delegates.iterator();</span><br><span class="line">		<span class="comment">//一个参考实现；将所有的WebMvcConfigurer相关配置都来一起调用；</span></span><br><span class="line">        <span class="keyword">while</span>(var2.hasNext()) &#123;</span><br><span class="line">            WebMvcConfigurer delegate = (WebMvcConfigurer)var2.next();</span><br><span class="line">            delegate.addViewControllers(registry);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h4 id="3）、容器中所有的WebMvcConfigurer都会一起起作用；"><a href="#3）、容器中所有的WebMvcConfigurer都会一起起作用；" class="headerlink" title="3）、容器中所有的WebMvcConfigurer都会一起起作用；"></a>3）、容器中所有的WebMvcConfigurer都会一起起作用；</h4><h4 id="4）、我们的配置类也会被调用；"><a href="#4）、我们的配置类也会被调用；" class="headerlink" title="4）、我们的配置类也会被调用；"></a>4）、我们的配置类也会被调用；</h4><p>至此，扩展配置内容结束</p>
+<h2 id="全面接管SpringMVC"><a href="#全面接管SpringMVC" class="headerlink" title="全面接管SpringMVC"></a>全面接管SpringMVC</h2><p>这一操作将SpringBoot对SpringMVC的自动配置全部废弃，所有配置都由我们自己配置；(不建议，此部分内容只是说明springboot提供了该操作场景)</p>
+<h3 id="实际实现"><a href="#实际实现" class="headerlink" title="实际实现"></a>实际实现</h3><p>实现起来也很简单，<strong>我们需要在配置类中添加@EnableWebMvc即可；</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用WebMvcConfigurerAdapter可以来扩展SpringMVC的功能</span></span><br><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyMvcConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addViewControllers</span><span class="params">(ViewControllerRegistry registry)</span> </span>&#123;</span><br><span class="line">       <span class="comment">// super.addViewControllers(registry);</span></span><br><span class="line">        <span class="comment">//浏览器发送 /atguigu 请求来到 success</span></span><br><span class="line">        registry.addViewController(<span class="string">"/shawn"</span>).setViewName(<span class="string">"success"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原理：</p>
+<p>为什么@EnableWebMvc自动配置就失效了；我们首先来看看其源码是如何配置的。</p>
+<p>1）@EnableWebMvc的核心</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//导入了DelegatingWebMvcConfiguration类</span></span><br><span class="line"><span class="meta">@Import</span>(DelegatingWebMvcConfiguration.class)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableWebMvc &#123;</span><br></pre></td></tr></table></figure>
+
+<p>2）、DelegatingWebMvcConfiguration类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//继承了WebMvcConfigurationSupport类</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelegatingWebMvcConfiguration</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurationSupport</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<p>3）、WebMvcConfigurationSupport类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ConditionalOnWebApplication</span></span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(&#123; Servlet.class, DispatcherServlet.class,</span><br><span class="line">		WebMvcConfigurerAdapter.class &#125;)</span><br><span class="line"><span class="comment">//该注解标识如果容器中没有这个组件的时候，这个自动配置类才生效</span></span><br><span class="line"><span class="meta">@ConditionalOnMissingBean</span>(WebMvcConfigurationSupport.class)</span><br><span class="line"><span class="meta">@AutoConfigureOrder</span>(Ordered.HIGHEST_PRECEDENCE + <span class="number">10</span>)</span><br><span class="line"><span class="meta">@AutoConfigureAfter</span>(&#123; DispatcherServletAutoConfiguration .class ,</span><br><span class="line">		ValidationAutoConfiguration .class &#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebMvcAutoConfiguration</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<p>4）、@EnableWebMvc将WebMvcConfigurationSupport组件导入进来；</p>
+<p>5）、导入的WebMvcConfigurationSupport只是SpringMVC最基本的功能；</p>
+<h2 id="自定义-ResponseBody渲染"><a href="#自定义-ResponseBody渲染" class="headerlink" title="自定义@ResponseBody渲染"></a>自定义@ResponseBody渲染</h2><p>Spring用于<code>HttpMessageConverters</code>渲染<code>@ResponseBody</code>（或响应 <code>@RestController</code>）。您可以通过在Spring Boot上下文中添加适当类型的bean来提供其他转换器。如果您添加的bean是默认包含的类型（例如<code>MappingJackson2HttpMessageConverter</code>JSON转换），则它将替换默认值。<code>HttpMessageConverters</code>提供了类型的便利bean， 如果您使用默认的MVC配置，它始终可用。它有一些有用的方法来访问默认和用户增强的消息转换器（例如，如果要手动将它们注入自定义，它可能很有用<code>RestTemplate</code>）。</p>
+<p>与正常的MVC使用情况一样，<code>WebMvcConfigurer</code>您提供的任何bean也可以通过覆盖该<code>configureMessageConverters</code>方法来提供转换器。但是，与普通的MVC不同，您只能提供所需的其他转换器（因为Spring Boot使用相同的机制来提供其默认值）。最后，如果您通过提供自己的<code>@EnableWebMvc</code>配置选择退出Spring Boot默认MVC 配置，则可以完全控制并使用<code>getMessageConverters</code>from 手动完成所有操作 <code>WebMvcConfigurationSupport</code>。</p>
+<p>有关<a href="https://github.com/spring-projects/spring-boot/tree/v2.1.6.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.java" target="_blank" rel="noopener"><code>WebMvcAutoConfiguration</code></a> 更多详细信息，请参阅 源代码。</p>
+<h2 id="处理多部分文件上载"><a href="#处理多部分文件上载" class="headerlink" title="处理多部分文件上载"></a>处理多部分文件上载</h2><p>Spring Boot包含Servlet 3 <code>javax.servlet.http.Part</code>API以支持上传文件。默认情况下，Spring Boot配置Spring MVC，每个文件的最大大小为1MB，单个请求中的文件数据最大为10MB。您可以覆盖这些值，中间数据的存储位置（例如，到<code>/tmp</code> 目录），以及使用<code>MultipartProperties</code>类中公开的属性将数据刷新到磁盘的阈值。例如，如果要指定文件不受限制，请将<code>spring.servlet.multipart.max-file-size</code>属性设置为<code>-1</code>。</p>
+<p>当您希望在Spring MVC控制器处理程序方法中接收多部分编码文件数据作为<code>@RequestParam</code>类型的注释参数时，多部分支持很有用<code>MultipartFile</code>。</p>
+<p>有关<a href="https://github.com/spring-projects/spring-boot/tree/v2.1.6.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/MultipartAutoConfiguration.java" target="_blank" rel="noopener"><code>MultipartAutoConfiguration</code></a> 详细信息，请参阅 源代码。</p>
+<table>
+<thead>
+<tr>
+<th><img src="note.png" alt="[注意]"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>建议使用容器的内置支持进行分段上传，而不是引入其他依赖项，例如Apache Commons File Upload。</td>
+</tr>
+</tbody></table>
+<h2 id="关闭Spring-MVC-DispatcherServlet"><a href="#关闭Spring-MVC-DispatcherServlet" class="headerlink" title="关闭Spring MVC DispatcherServlet"></a>关闭Spring MVC DispatcherServlet</h2><p>默认情况下，所有内容都是从应用程序的根目录（<code>/</code>）提供的。如果您希望映射到其他路径，可以按如下方式配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spring.mvc.servlet.path = / acme</span><br></pre></td></tr></table></figure>
+
+<p>如果你有额外的servlet，你可以声明一个<code>@Bean</code>类型<code>Servlet</code>或 <code>ServletRegistrationBean</code>每个servlet ，Spring Boot会将它们透明地注册到容器中。因为servlet是以这种方式注册的，所以可以将它们映射到<code>DispatcherServlet</code>不调用它的子上下文。</p>
+<p>配置<code>DispatcherServlet</code>你自己是不寻常的，但如果你真的需要这样做，还必须提供一种 <code>@Bean</code>类型<code>DispatcherServletPath</code>来提供自定义的路径<code>DispatcherServlet</code>。</p>
+<h2 id="拦截器配置"><a href="#拦截器配置" class="headerlink" title="拦截器配置"></a>拦截器配置</h2><p><strong>模拟场景：</strong></p>
+<p>​    登陆时，对没有用户session的操作进行拦截调到首页</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>编写拦截器类LoginHandlerInterceptor，实现HandlerInterceptor接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 登陆检查，</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginHandlerInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="comment">//目标方法执行之前</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Object user = request.getSession().getAttribute(<span class="string">"loginUser"</span>);</span><br><span class="line">        <span class="keyword">if</span>(user == <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="comment">//未登陆，返回登陆页面</span></span><br><span class="line">            request.setAttribute(<span class="string">"msg"</span>,<span class="string">"没有权限请先登陆"</span>);</span><br><span class="line">            request.getRequestDispatcher(<span class="string">"/index.html"</span>).forward(request,response);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="comment">//已登陆，放行请求</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将该拦截器添加入容器</p>
+<p>mvc自动配置类MyMvcConfig中重写拦截器方法写入规则</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter4.config;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="comment">//@EnableWebMvc</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyMvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//重写方法写入拦截规则</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addInterceptor(<span class="keyword">new</span> LoginInterceptor()).addPathPatterns(<span class="string">"/**"</span>)</span><br><span class="line">                .excludePathPatterns(<span class="string">"/"</span>,<span class="string">"/index"</span>,<span class="string">"/login"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><p><a href="https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/htmlsingle/#boot-features-developing-web-applications" target="_blank" rel="noopener">springboot官方文档</a></p>
+<p><a href="https://github.com/ShawnJim/spring-boot-learning/tree/master/chapter4-web" target="_blank" rel="noopener">git相关项目</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/07/26/初识SpringBoot丨第四篇_整合thymeleaf-国际化配置/" rel="next" title=" 初识SpringBoot丨第四篇：整合thymeleaf & 国际化配置">
+                <i class="fa fa-chevron-left"></i>  初识SpringBoot丨第四篇：整合thymeleaf & 国际化配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/" rel="prev" title="初识SpringBoot丨第六篇：使用jdbcTemplate访问数据库">
+                初识SpringBoot丨第六篇：使用jdbcTemplate访问数据库 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/kafu.jpg"
+      alt="John Doe">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展SpringMvc"><span class="nav-number">1.</span> <span class="nav-text">扩展SpringMvc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、编写一个springmvc-xml文件"><span class="nav-number">1.1.</span> <span class="nav-text">1、编写一个springmvc.xml文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写一个配置类（-Configuration）"><span class="nav-number">1.2.</span> <span class="nav-text">编写一个配置类（@Configuration）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1）、WebMvcAutoConfiguration是SpringMVC的自动配置类"><span class="nav-number">1.2.1.</span> <span class="nav-text">1）、WebMvcAutoConfiguration是SpringMVC的自动配置类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2）、在做其他自动配置时会导入；-Import-WebMvcAutoConfiguration-EnableWebMvcConfiguration-class"><span class="nav-number">1.2.2.</span> <span class="nav-text">2）、在做其他自动配置时会导入；@Import({WebMvcAutoConfiguration . EnableWebMvcConfiguration .class})</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3）、容器中所有的WebMvcConfigurer都会一起起作用；"><span class="nav-number">1.2.3.</span> <span class="nav-text">3）、容器中所有的WebMvcConfigurer都会一起起作用；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4）、我们的配置类也会被调用；"><span class="nav-number">1.2.4.</span> <span class="nav-text">4）、我们的配置类也会被调用；</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全面接管SpringMVC"><span class="nav-number">2.</span> <span class="nav-text">全面接管SpringMVC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实际实现"><span class="nav-number">2.1.</span> <span class="nav-text">实际实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义-ResponseBody渲染"><span class="nav-number">3.</span> <span class="nav-text">自定义@ResponseBody渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理多部分文件上载"><span class="nav-number">4.</span> <span class="nav-text">处理多部分文件上载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关闭Spring-MVC-DispatcherServlet"><span class="nav-number">5.</span> <span class="nav-text">关闭Spring MVC DispatcherServlet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截器配置"><span class="nav-number">6.</span> <span class="nav-text">拦截器配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">6.1.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关资料"><span class="nav-number">7.</span> <span class="nav-text">相关资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

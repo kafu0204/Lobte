@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="Java Persistence API是一种标准技术，可让您将对象“映射”到关系数据库。该spring-boot-starter-data-jpaPOM提供了上手的快捷方式。它提供以下关键依赖项：">
+<meta name="keywords" content="java,Spring,SpringDataJpa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识SpringBoot丨第八篇：SpringDataJpa整合">
+<meta property="og:url" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/index.html">
+<meta property="og:site_name" content="卡夫">
+<meta property="og:description" content="Java Persistence API是一种标准技术，可让您将对象“映射”到关系数据库。该spring-boot-starter-data-jpaPOM提供了上手的快捷方式。它提供以下关键依赖项：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564288001185.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564291538028.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564293387787.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564293447896.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564293620556.png">
+<meta property="og:updated_time" content="2019-10-10T14:35:20.581Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识SpringBoot丨第八篇：SpringDataJpa整合">
+<meta name="twitter:description" content="Java Persistence API是一种标准技术，可让您将对象“映射”到关系数据库。该spring-boot-starter-data-jpaPOM提供了上手的快捷方式。它提供以下关键依赖项：">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564288001185.png">
+  <link rel="canonical" href="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>初识SpringBoot丨第八篇：SpringDataJpa整合 | 卡夫</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">卡夫</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+    </ul>
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/kafu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="卡夫">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">初识SpringBoot丨第八篇：SpringDataJpa整合
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-30 15:22:13" itemprop="dateCreated datePublished" datetime="2019-07-30T15:22:13+08:00">2019-07-30</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-10 22:35:20" itemprop="dateModified" datetime="2019-10-10T22:35:20+08:00">2019-10-10</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>Java Persistence API是一种标准技术，可让您将对象“映射”到关系数据库。该<code>spring-boot-starter-data-jpa</code>POM提供了上手的快捷方式。它提供以下关键依赖项：</p>
+</blockquote>
+<a id="more"></a>
+
+<ul>
+<li>Hibernate：最受欢迎的JPA实现之一。</li>
+<li>Spring Data JPA：使实现基于JPA的存储库变得容易。</li>
+<li>Spring ORMs：Spring Framework的核心ORM支持。</li>
+</ul>
+<p>本文不会详细介绍JPA或<a href="https://projects.spring.io/spring-data/" target="_blank" rel="noopener">Spring Data</a>。您可以按照<a href="https://spring.io/guides/gs/accessing-data-jpa/" target="_blank" rel="noopener">“访问数据与JPA”</a> 从官网<a href="https://spring.io/" target="_blank" rel="noopener">spring.io</a>阅读<a href="https://projects.spring.io/spring-data-jpa/" target="_blank" rel="noopener">SprignDataJPA</a>和 <a href="https://hibernate.org/orm/documentation/" target="_blank" rel="noopener">Hibernate的</a>参考文档。</p>
+<h2 id="Spring-Data-JPA详细介绍"><a href="#Spring-Data-JPA详细介绍" class="headerlink" title="Spring Data JPA详细介绍"></a>Spring Data JPA详细介绍</h2><p>常见的ORM框架中<code>Hibernate</code>的JPA最为完整，因此<code>Spring Data JPA</code> 是采用基于JPA规范的<code>Hibernate</code>框架基础下提供了<code>Repository</code>层的实现。<strong>Spring Data Repository极大地简化了实现各种持久层的数据库访问而写的样板代码量，同时CrudRepository提供了丰富的CRUD功能去管理实体类。</strong></p>
+<blockquote>
+<p>优点</p>
+</blockquote>
+<ul>
+<li>丰富的API，简单操作无需编写额外的代码</li>
+<li>丰富的SQL日志输出</li>
+</ul>
+<blockquote>
+<p>缺点</p>
+</blockquote>
+<ul>
+<li>学习成本较大，需要学习HQL</li>
+<li>配置复杂，虽然<code>SpringBoot</code>简化的大量的配置，关系映射多表查询配置依旧不容易</li>
+<li>性能较差，对比<code>JdbcTemplate</code>、<code>Mybatis</code>等ORM框架，它的性能无异于是最差的</li>
+</ul>
+<p> <strong>ORM对比图</strong></p>
+<p>以下针对<strong>Spring JDBC、Spring Data Jpa、Mybatis</strong>三款框架做了个粗略的对比。<strong>一般应用的性能瓶颈并不是在于ORM，所以这三个框架技术选型应该考虑项目的场景、团队的技能掌握情况、开发周期(开发效率)…</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">框架对比</th>
+<th align="left">Spring JDBC</th>
+<th align="left">Spring Data Jpa</th>
+<th align="left">Mybatis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">性能</td>
+<td align="left">性能最好</td>
+<td align="left">性能最差</td>
+<td align="left">居中</td>
+</tr>
+<tr>
+<td align="left">代码量</td>
+<td align="left">多</td>
+<td align="left">少</td>
+<td align="left">多</td>
+</tr>
+<tr>
+<td align="left">学习成本</td>
+<td align="left">低</td>
+<td align="left">高</td>
+<td align="left">居中</td>
+</tr>
+<tr>
+<td align="left">推荐指数</td>
+<td align="left">❤❤❤</td>
+<td align="left">❤❤❤❤❤</td>
+<td align="left">❤❤❤❤❤</td>
+</tr>
+</tbody></table>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><h3 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h3><p>老规矩.. 一如既往使用<code>spring initialiizr</code>创建</p>
+<img src="/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564288001185.png">
+
+<p><strong>pom.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- jpa整合包 底层使用Hibernate--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-jpa<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- mysql 驱动 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 测试包 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>结构图</p>
+<img src="/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564291538028.png">
+
+<p><strong>application.yml</strong></p>
+<p>具体配置项可查看 <code>JpaProperties</code>（prefix=”spring.jpa”）配置类</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:mysql://127.0.0.1:3306/chapter7_jpa?serverTimezone=UTC</span></span><br><span class="line"><span class="attr">    username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    password:</span> <span class="number">1234</span></span><br><span class="line"><span class="attr">  jpa:</span></span><br><span class="line"><span class="attr">    hibernate:</span></span><br><span class="line">      <span class="comment"># 项目启动时更新或者创建数据表结构</span></span><br><span class="line"><span class="attr">      ddl-auto:</span> <span class="string">update</span></span><br><span class="line">    <span class="comment"># 项目运行过程中 控制台打印sql</span></span><br><span class="line"><span class="attr">    show-sql:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="代码操作"><a href="#代码操作" class="headerlink" title="代码操作"></a>代码操作</h2><h3 id="配置bean"><a href="#配置bean" class="headerlink" title="配置bean"></a>配置bean</h3><p>编写一个实体类（bean）和数据表进行映射，并且配置好映射关系；由于我们在全局配置文件中配置了</p>
+<p><code>spring.jpa.hibernate.ddl-auto</code>选项，所以我们可以直接先不用再数据库中建表，直接由待会项目启动时由项目自动创建，</p>
+<blockquote>
+<p>ddl-auto 几种属性</p>
+</blockquote>
+<ul>
+<li><strong>create：</strong> 每次运行程序时，都会重新创建表，故而数据会丢失</li>
+<li><strong>create-drop：</strong> 每次运行程序时会先创建表结构，然后待程序结束时清空表</li>
+<li><strong>upadte：</strong> 每次运行程序，没有表时会创建表，如果对象发生改变会更新表结构，原有数据不会清空，只会更新（推荐使用）</li>
+<li><strong>validate：</strong> 运行程序会校验数据与数据库的字段类型是否相同，<strong>字段不同会报错</strong></li>
+</ul>
+<p>详细参考下方示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter7springdatajpa.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.persistence.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用JPA注解配置映射关系</span></span><br><span class="line"><span class="meta">@Entity</span> <span class="comment">//告诉JPA这是一个实体类（和数据表映射的类）</span></span><br><span class="line"><span class="meta">@Table</span>(name = <span class="string">"t_user"</span>) <span class="comment">//@Table来指定和哪个数据表对应;如果省略默认表名就是user；</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span> <span class="comment">//这是一个主键</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)<span class="comment">//自增主键</span></span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"user_name"</span>,length = <span class="number">50</span>) <span class="comment">//这是和数据表对应的一个列</span></span><br><span class="line">    <span class="keyword">private</span> String userName;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Column</span> <span class="comment">//省略默认列名就是属性名</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String userName, String email)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.userName = userName;</span><br><span class="line">        <span class="keyword">this</span>.email = email;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...省略getter setter</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建dao接口继承Repository"><a href="#创建dao接口继承Repository" class="headerlink" title="创建dao接口继承Repository"></a>创建dao接口继承Repository</h3><p>编写一个Dao接口来操作实体类对应的数据表（JpaRepository）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter7springdatajpa.repository;</span><br><span class="line"></span><br><span class="line"><span class="comment">//继承JpaRepository来完成对数据库的操作  接口泛型&lt;实体类对象，主键类型&gt;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDao</span> <span class="keyword">extends</span> <span class="title">JpaRepository</span>&lt;<span class="title">User</span>,<span class="title">Integer</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><h3 id="测试建表"><a href="#测试建表" class="headerlink" title="测试建表"></a>测试建表</h3><p>启动项目，通过配置项我们发现表已经建成功了</p>
+<img src="/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564293387787.png">
+
+<img src="/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564293447896.png">
+
+<h3 id="测试接口"><a href="#测试接口" class="headerlink" title="测试接口"></a>测试接口</h3><p>接口就简单测个插入查询吧</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter7springdatajpa;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Chapter7SpringdataJpaApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(Chapter7SpringdataJpaApplicationTests.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserDao userDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        User user = <span class="keyword">new</span> User(<span class="string">"user1"</span>, <span class="string">"2510xxxxxxxx.@xx.com"</span>);</span><br><span class="line">        User flush = userDao.saveAndFlush(user);</span><br><span class="line">        log.info(String.format(<span class="string">"插入用户数据 用户id: &#123;%s&#125;"</span>,user.getId()));</span><br><span class="line">        Optional&lt;User&gt; userById = userDao.findById(user.getId());</span><br><span class="line">        log.info(String.format(<span class="string">"查询用户 user: &#123;%s&#125;"</span>,userById.toString()));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/1564293620556.png">
+
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是springdatajpa整合过程，相关资料如下</p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-jpa-and-spring-data" target="_blank" rel="noopener">springboot官方文档</a></p>
+<p><a href="https://github.com/ShawnJim/spring-boot-learning/tree/master/chapter7-springdata-jpa" target="_blank" rel="noopener">相关个人项目</a></p>
+<p><a href="https://blog.battcn.com/2018/05/08/springboot/v2-orm-jpa/" target="_blank" rel="noopener">参考博文</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/SpringDataJpa/" rel="tag"># SpringDataJpa</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/07/27/初识SpringBoot丨第七篇_Mybatis整合/" rel="next" title="初识SpringBoot丨第七篇：Mybatis整合">
+                <i class="fa fa-chevron-left"></i> 初识SpringBoot丨第七篇：Mybatis整合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2019/07/30/Docker的安装与使用/" rel="prev" title="Docker的安装与使用">
+                Docker的安装与使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/kafu.jpg"
+      alt="John Doe">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Data-JPA详细介绍"><span class="nav-number">1.</span> <span class="nav-text">Spring Data JPA详细介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建项目"><span class="nav-number">2.1.</span> <span class="nav-text">创建项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码操作"><span class="nav-number">3.</span> <span class="nav-text">代码操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置bean"><span class="nav-number">3.1.</span> <span class="nav-text">配置bean</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建dao接口继承Repository"><span class="nav-number">3.2.</span> <span class="nav-text">创建dao接口继承Repository</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">4.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#测试建表"><span class="nav-number">4.1.</span> <span class="nav-text">测试建表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试接口"><span class="nav-number">4.2.</span> <span class="nav-text">测试接口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

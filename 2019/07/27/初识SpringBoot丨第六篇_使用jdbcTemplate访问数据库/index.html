@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="Spring Framework对数据库的操作在JDBC上面做了深层次的封装，通过依赖注入功能，可以将 DataSource 注册到JdbcTemplate之中，使我们可以轻易的完成对象关系映射，并有助于规避常见的错误，在SpringBoot中我们可以很轻松的使用它。">
+<meta name="keywords" content="mysql,java,Spring,jdbcTemplate">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识SpringBoot丨第六篇：使用jdbcTemplate访问数据库">
+<meta property="og:url" content="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/index.html">
+<meta property="og:site_name" content="卡夫">
+<meta property="og:description" content="Spring Framework对数据库的操作在JDBC上面做了深层次的封装，通过依赖注入功能，可以将 DataSource 注册到JdbcTemplate之中，使我们可以轻易的完成对象关系映射，并有助于规避常见的错误，在SpringBoot中我们可以很轻松的使用它。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564144529646.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564210509669.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564210575329.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564212299638.png">
+<meta property="og:updated_time" content="2019-10-10T14:35:20.713Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识SpringBoot丨第六篇：使用jdbcTemplate访问数据库">
+<meta name="twitter:description" content="Spring Framework对数据库的操作在JDBC上面做了深层次的封装，通过依赖注入功能，可以将 DataSource 注册到JdbcTemplate之中，使我们可以轻易的完成对象关系映射，并有助于规避常见的错误，在SpringBoot中我们可以很轻松的使用它。">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564144529646.png">
+  <link rel="canonical" href="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>初识SpringBoot丨第六篇：使用jdbcTemplate访问数据库 | 卡夫</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">卡夫</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+    </ul>
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/kafu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="卡夫">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">初识SpringBoot丨第六篇：使用jdbcTemplate访问数据库
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-27 21:54:46" itemprop="dateCreated datePublished" datetime="2019-07-27T21:54:46+08:00">2019-07-27</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-10 22:35:20" itemprop="dateModified" datetime="2019-10-10T22:35:20+08:00">2019-10-10</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p><code>Spring Framework</code>对数据库的操作在<code>JDBC</code>上面做了深层次的封装，通过<code>依赖注入</code>功能，可以将 <code>DataSource</code> 注册到<code>JdbcTemplate</code>之中，使我们可以轻易的完成对象关系映射，并有助于规避常见的错误，在<code>SpringBoot</code>中我们可以很轻松的使用它。</p>
+</blockquote>
+<a id="more"></a>
+
+<p>特点：</p>
+<ul>
+<li>速度快，对比其它的ORM框架而言，JDBC的方式无异于是最快的</li>
+<li>配置简单，<code>Spring</code>自家出品，几乎没有额外配置</li>
+<li>学习成本低，毕竟<code>JDBC</code>是基础知识，<code>JdbcTemplate</code>更像是一个<code>DBUtils</code></li>
+</ul>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><h3 id="工程创建"><a href="#工程创建" class="headerlink" title="工程创建"></a>工程创建</h3><p>创建一个工程 选择需要用到的项目，也可以在pom文件中选择添加。</p>
+<img src="/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564144529646.png">
+
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>POM文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>application.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line">  	<span class="comment">#驱动包 </span></span><br><span class="line">  	<span class="comment">#springboot2.0  默认数据源使用com.zaxxer.hikari.HikariDataSource 作为数据源，</span></span><br><span class="line">    <span class="comment">#com.mysql.jdbc.Driver 已被弃用</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#数据库地址 如果出现时区错误 The server time zone value 'xxx' is unrecognize, 可在后面添加 ?serverTimezone=UTC</span></span><br><span class="line">    <span class="comment">#jdbc:mysql://localhost:3306/chapter5_jdbc?serverTimezone=UTC</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:mysql://localhost:3306/chapter5_jdbc</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#访问用户名</span></span><br><span class="line"><span class="attr">    username:</span> <span class="string">root</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#访问密码</span></span><br><span class="line"><span class="attr">    password:</span> <span class="number">1234</span></span><br></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<p>​    默认是用class 作为数据源；</p>
+<p>​    数据源的相关配置都在DataSourceProperties类中；</p>
+<h3 id="配置原理"><a href="#配置原理" class="headerlink" title="配置原理"></a>配置原理</h3><p>org.springframework.boot.autoconfigure.jdbc：</p>
+<p>1、参考DataSourceConfiguration，根据配置创建数据源，默认使用Tomcat连接池；可以使用spring.datasource.type指定自定义的数据源类型；</p>
+<p>2、SpringBoot默认支持的数据源；</p>
+<p>DataSourceConfiguration定义了所有支持的数据源（具体的查看 DataSourceConfiguration配置类）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceConfiguration</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line">   <span class="meta">@ConditionalOnClass</span>(&#123;BasicDataSource.class&#125;)</span><br><span class="line">   <span class="meta">@ConditionalOnMissingBean</span>(&#123;DataSource.class&#125;)</span><br><span class="line">   <span class="meta">@ConditionalOnProperty</span>(</span><br><span class="line">       name = &#123;<span class="string">"spring.datasource.type"</span>&#125;,</span><br><span class="line">       <span class="comment">//该注解指定该类为数据源类</span></span><br><span class="line">       havingValue = <span class="string">"org.apache.commons.dbcp2.BasicDataSource"</span>,</span><br><span class="line">       matchIfMissing = <span class="keyword">true</span></span><br><span class="line">   )</span><br><span class="line">   <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Dbcp2</span> </span>&#123;</span><br><span class="line">       </span><br><span class="line">   &#125;</span><br><span class="line">    </span><br><span class="line">    。。。</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、自定义数据源类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceConfiguration</span> </span>&#123;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Generic DataSource configuration. 自定义数据源方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span>(DataSource.class)</span><br><span class="line">    <span class="meta">@ConditionalOnProperty</span>(name = <span class="string">"spring.datasource.type"</span>)</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Generic</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="meta">@Bean</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> DataSource <span class="title">dataSource</span><span class="params">(DataSourceProperties properties)</span> </span>&#123;</span><br><span class="line">           <span class="comment">//使用DataSourceBuilder创建数据源，利用反射创建响应type的数据源，并且绑定相关属性</span></span><br><span class="line">          <span class="keyword">return</span> properties.initializeDataSourceBuilder().build();</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">properties.initializeDataSourceBuilder().build();</span><br><span class="line">点击进入build查看实现方法</span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Class&lt;? extends DataSource&gt; type = <span class="keyword">this</span>.getType();</span><br><span class="line">      	<span class="comment">//利用反射获取容器中的数据源</span></span><br><span class="line">        DataSource result = (DataSource)BeanUtils.instantiateClass(type);</span><br><span class="line">        <span class="keyword">this</span>.maybeGetDriverClassName();</span><br><span class="line">        <span class="keyword">this</span>.bind(result);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="项目初识化-数据库操作"><a href="#项目初识化-数据库操作" class="headerlink" title="项目初识化 数据库操作"></a>项目初识化 数据库操作</h2><p>springboot提供了在启动项目时执行建表sql &amp; 数据sql的操作</p>
+<h3 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h3><p>application.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:mysql://127.0.0.1:3306/chapter5_jdbc?serverTimezone=UTC</span></span><br><span class="line"><span class="attr">    username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    password:</span> <span class="number">1234</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 执行sql操作配置</span></span><br><span class="line">    <span class="comment"># 账号密码</span></span><br><span class="line"><span class="attr">    schema-username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    schema-password:</span> <span class="number">1234</span></span><br><span class="line">    <span class="comment"># 操作开关 aways为开启  never、embedded关闭</span></span><br><span class="line"><span class="attr">    initialization-mode:</span> <span class="string">alwas</span></span><br><span class="line">    <span class="comment"># 指定文件地址 不指定则 默认为如下文件</span></span><br><span class="line">    <span class="comment"># 建表文件 （schema.sql、schema-all.sql）数据语句sql文件（data.sql、data-all.sql）</span></span><br><span class="line"><span class="attr">    schema:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">classpath*:employee.sql</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">classpath*:schema.sql</span></span><br></pre></td></tr></table></figure>
+
+<img src="/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564210509669.png">
+
+<p>department.sql</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> FOREIGN_KEY_CHECKS=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Table structure for department</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`department`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`department`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`departmentName`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">1</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br></pre></td></tr></table></figure>
+
+<p>启动项目查看数据库则相应表已经创建完成</p>
+<img src="/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564210575329.png">
+
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>从源码入手，首先查看springboot这方面的自动配置类</p>
+<p><strong>DataSourceAutoConfiguration</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import</span>(&#123;DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class&#125;)</span><br><span class="line"><span class="comment">//导入了DataSourceInitializationConfiguration 类初识化配置类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceAutoConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DataSourceAutoConfiguration</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>发现其导入了DataSourceInitializationConfiguration这个初始化配置类，再看该类</p>
+<p><strong>DataSourceInitializationConfiguration</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Import</span>(&#123;DataSourceInitializerInvoker.class, DataSourceInitializationConfiguration.Registrar.class&#125;)</span><br><span class="line"><span class="comment">//导入了DataSourceInitializerInvoker执行类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataSourceInitializationConfiguration</span> </span>&#123;</span><br><span class="line">    DataSourceInitializationConfiguration() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其导入了DataSourceInitializerInvoker这个初始化程序执行类，再继续</p>
+<p><strong>DataSourceInitializerInvoker</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataSourceInitializerInvoker</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">DataSourceSchemaCreatedEvent</span>&gt;, <span class="title">InitializingBean</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Log logger = LogFactory.getLog(DataSourceInitializerInvoker.class);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//维护了这个数据源初始化类</span></span><br><span class="line">    <span class="keyword">private</span> DataSourceInitializer dataSourceInitializer;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">private</span> DataSourceInitializer <span class="title">getDataSourceInitializer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.dataSourceInitializer == <span class="keyword">null</span>) &#123;</span><br><span class="line">            DataSource ds = (DataSource)<span class="keyword">this</span>.dataSource.getIfUnique();</span><br><span class="line">            <span class="keyword">if</span> (ds != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">this</span>.dataSourceInitializer = <span class="keyword">new</span> DataSourceInitializer(ds, <span class="keyword">this</span>.properties, <span class="keyword">this</span>.applicationContext);</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>DataSourceInitializerInvoker实现了ApplicationListener应用程序监听接口并且内部维护了一个数据源初识化构造类 DataSourceInitializer ，到这步应该就能够发现其中实现的方法了</p>
+<p><strong>DataSourceInitializer</strong> 部分代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.springframework.boot.autoconfigure.jdbc;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataSourceInitializer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Log logger = LogFactory.getLog(DataSourceInitializer.class);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DataSource dataSource;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *	执行库sql文件方法</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">createSchema</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//获取配置信息</span></span><br><span class="line">        List&lt;Resource&gt; scripts = <span class="keyword">this</span>.getScripts(<span class="string">"spring.datasource.schema"</span>, <span class="keyword">this</span>.properties.getSchema(), <span class="string">"schema"</span>);</span><br><span class="line">        <span class="keyword">if</span> (!scripts.isEmpty()) &#123;</span><br><span class="line">            <span class="comment">//判断配置文件中开关是否为always允许</span></span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">this</span>.isEnabled()) &#123;</span><br><span class="line">                logger.debug(<span class="string">"Initialization disabled (not running DDL scripts)"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            String username = <span class="keyword">this</span>.properties.getSchemaUsername();</span><br><span class="line">            String password = <span class="keyword">this</span>.properties.getSchemaPassword();</span><br><span class="line">            <span class="comment">//运行</span></span><br><span class="line">            <span class="keyword">this</span>.runScripts(scripts, username, password);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> !scripts.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *	执行数据文件方法 如createSchema类似</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initSchema</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;Resource&gt; scripts = <span class="keyword">this</span>.getScripts(<span class="string">"spring.datasource.data"</span>, <span class="keyword">this</span>.properties.getData(), <span class="string">"data"</span>);</span><br><span class="line">        <span class="keyword">if</span> (!scripts.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">this</span>.isEnabled()) &#123;</span><br><span class="line">                logger.debug(<span class="string">"Initialization disabled (not running data scripts)"</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            String username = <span class="keyword">this</span>.properties.getDataUsername();</span><br><span class="line">            String password = <span class="keyword">this</span>.properties.getDataPassword();</span><br><span class="line">            <span class="keyword">this</span>.runScripts(scripts, username, password);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//开关方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isEnabled</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//getInitializationMode 为配置项中的 initialization-mode</span></span><br><span class="line">        DataSourceInitializationMode mode = <span class="keyword">this</span>.properties.getInitializationMode();</span><br><span class="line">        <span class="keyword">if</span> (mode == DataSourceInitializationMode.NEVER) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> mode != DataSourceInitializationMode.EMBEDDED || <span class="keyword">this</span>.isEmbedded();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//拼接配置文件参数</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;Resource&gt; <span class="title">getScripts</span><span class="params">(String propertyName, List&lt;String&gt; resources, String fallback)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (resources != <span class="keyword">null</span>) &#123;</span><br><span class="line">        	<span class="comment">//如果配置文件中shema配置项不为空则按指定文件执行</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.getResources(propertyName, resources, <span class="keyword">true</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//如果配置文件中shema配置项为空则按默认配置执行 如shema.sql  ,传入fallback参数为文件名称</span></span><br><span class="line">            String platform = <span class="keyword">this</span>.properties.getPlatform();</span><br><span class="line">            List&lt;String&gt; fallbackResources = <span class="keyword">new</span> ArrayList();</span><br><span class="line">            fallbackResources.add(<span class="string">"classpath*:"</span> + fallback + <span class="string">"-"</span> + platform + <span class="string">".sql"</span>);</span><br><span class="line">            fallbackResources.add(<span class="string">"classpath*:"</span> + fallback + <span class="string">".sql"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.getResources(propertyName, fallbackResources, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//执行方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">runScripts</span><span class="params">(List&lt;Resource&gt; resources, String username, String password)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!resources.isEmpty()) &#123;</span><br><span class="line">            ResourceDatabasePopulator populator = <span class="keyword">new</span> ResourceDatabasePopulator();</span><br><span class="line">            populator.setContinueOnError(<span class="keyword">this</span>.properties.isContinueOnError());</span><br><span class="line">            populator.setSeparator(<span class="keyword">this</span>.properties.getSeparator());</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.properties.getSqlScriptEncoding() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                populator.setSqlScriptEncoding(<span class="keyword">this</span>.properties.getSqlScriptEncoding().name());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Iterator var5 = resources.iterator();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span>(var5.hasNext()) &#123;</span><br><span class="line">                Resource resource = (Resource)var5.next();</span><br><span class="line">                populator.addScript(resource);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            DataSource dataSource = <span class="keyword">this</span>.dataSource;</span><br><span class="line">            <span class="keyword">if</span> (StringUtils.hasText(username) &amp;&amp; StringUtils.hasText(password)) &#123;</span><br><span class="line">                dataSource = DataSourceBuilder.create(<span class="keyword">this</span>.properties.getClassLoader()).driverClassName(<span class="keyword">this</span>.properties.determineDriverClassName()).url(<span class="keyword">this</span>.properties.determineUrl()).username(username).password(password).build();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            DatabasePopulatorUtils.execute(populator, dataSource);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如此 我们也就对该配置及实现了解了个大概！！</p>
+<h2 id="数据源连接池"><a href="#数据源连接池" class="headerlink" title="数据源连接池"></a>数据源连接池</h2><p>springboot默认配置配置源选择有很多，在这里我就用druid阿里数据源连接池来做示例</p>
+<h3 id="具体操作-1"><a href="#具体操作-1" class="headerlink" title="具体操作"></a>具体操作</h3><h4 id="配置文件-1"><a href="#配置文件-1" class="headerlink" title="配置文件"></a>配置文件</h4><p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 阿里数据源 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>druid<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.8<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 引入日志，否则数据源启动报错 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>log4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>log4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.17<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>application.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:mysql://127.0.0.1:3306/chapter5_jdbc?serverTimezone=UTC</span></span><br><span class="line"><span class="attr">    username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    password:</span> <span class="number">1234</span></span><br><span class="line">    <span class="comment"># 自动建表</span></span><br><span class="line"><span class="attr">    schema-username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">    schema-password:</span> <span class="number">1234</span></span><br><span class="line"><span class="attr">    initialization-mode:</span> <span class="string">embedded</span></span><br><span class="line"><span class="attr">    schema:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">classpath*:employee.sql</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">classpath*:schema.sql</span></span><br><span class="line">      </span><br><span class="line">    <span class="comment"># 指定数据源为阿里连接池数据源</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line">    <span class="comment">#   数据源其他配置</span></span><br><span class="line"><span class="attr">    initialSize:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">    minIdle:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">    maxActive:</span> <span class="number">20</span></span><br><span class="line"><span class="attr">    maxWait:</span> <span class="number">60000</span></span><br><span class="line"><span class="attr">    timeBetweenEvictionRunsMillis:</span> <span class="number">60000</span></span><br><span class="line"><span class="attr">    minEvictableIdleTimeMillis:</span> <span class="number">300000</span></span><br><span class="line"><span class="attr">    validationQuery:</span> <span class="string">SELECT</span> <span class="number">1</span> <span class="string">FROM</span> <span class="string">DUAL</span></span><br><span class="line"><span class="attr">    testWhileIdle:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    testOnBorrow:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    testOnReturn:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    poolPreparedStatements:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙</span></span><br><span class="line"><span class="attr">    filters:</span> <span class="string">stat,wall,log4j</span></span><br><span class="line"><span class="attr">    maxPoolPreparedStatementPerConnectionSize:</span> <span class="number">20</span></span><br><span class="line"><span class="attr">    useGlobalDataSourceStat:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    connectionProperties:</span> <span class="string">druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="自定义数据源配置类-amp-监控管理后台"><a href="#自定义数据源配置类-amp-监控管理后台" class="headerlink" title="自定义数据源配置类&amp;监控管理后台"></a>自定义数据源配置类&amp;监控管理后台</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter5.config;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DruidConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    *	绑定配置文件各项参数，并写入容器中</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"spring.datasource"</span>)</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DruidDataSource <span class="title">druidDataSource</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DruidDataSource();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置Druid的监控</span></span><br><span class="line"><span class="comment">     * 配置一个管理后台的Servlet</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServletRegistrationBean <span class="title">statViewServlet</span><span class="params">()</span></span>&#123;</span><br><span class="line">        ServletRegistrationBean bean = <span class="keyword">new</span> ServletRegistrationBean(<span class="keyword">new</span> StatViewServlet(),</span><br><span class="line">                <span class="string">"/druid/*"</span>);</span><br><span class="line">        Map&lt;String,String&gt; initParams = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//登陆名密码</span></span><br><span class="line">            initParams.put(<span class="string">"loginUsername"</span>,<span class="string">"admin"</span>);</span><br><span class="line">            initParams.put(<span class="string">"loginPassword"</span>,<span class="string">"1234"</span>);</span><br><span class="line">            <span class="comment">//白名单</span></span><br><span class="line">            initParams.put(<span class="string">"allow"</span>,<span class="string">"localhost"</span>);</span><br><span class="line">            <span class="comment">//黑名单</span></span><br><span class="line">            initParams.put(<span class="string">"deny"</span>,<span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        bean.setInitParameters(initParams);</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置web监控的拦截器</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> FilterRegistrationBean <span class="title">webStatFilter</span><span class="params">()</span></span>&#123;</span><br><span class="line">        FilterRegistrationBean registrationBean = <span class="keyword">new</span> FilterRegistrationBean();</span><br><span class="line">        &#123;</span><br><span class="line">            registrationBean.setFilter(<span class="keyword">new</span> WebStatFilter());</span><br><span class="line">            <span class="comment">//配置属型</span></span><br><span class="line">            Map&lt;String,String&gt; initParam = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//拦截白名单</span></span><br><span class="line">                initParam.put(<span class="string">"exclusions"</span>,<span class="string">"*.js,*.css"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            registrationBean.setInitParameters(initParam);</span><br><span class="line">            <span class="comment">//拦截配置 /* 拦截所有</span></span><br><span class="line">            registrationBean.setUrlPatterns(Arrays.asList(<span class="string">"/*"</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> registrationBean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，数据源与监控管理后台配置完成 打开浏览器测试</p>
+<img src="/2019/07/27/初识SpringBoot丨第六篇_使用jdbcTemplate访问数据库/1564212299638.png">
+
+<p>大功告成！！</p>
+<h2 id="CRUD操作"><a href="#CRUD操作" class="headerlink" title="CRUD操作"></a>CRUD操作</h2><h3 id="数据表"><a href="#数据表" class="headerlink" title="数据表"></a>数据表</h3><p>首先数据库建表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_user`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">8</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT <span class="keyword">COMMENT</span> <span class="string">'主键自增'</span>,</span><br><span class="line">  <span class="string">`username`</span> <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'用户名'</span>,</span><br><span class="line">  <span class="string">`password`</span> <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'密码'</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 <span class="keyword">COMMENT</span>=<span class="string">'用户表'</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="entity类"><a href="#entity类" class="headerlink" title="entity类"></a>entity类</h3><p><strong>User</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter5.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String username, String password)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">        <span class="keyword">this</span>.password = password;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    省略getter setter</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="restful-风格接口"><a href="#restful-风格接口" class="headerlink" title="restful 风格接口"></a>restful 风格接口</h3><p>偷个小懒，就省略了<strong>service</strong>,<strong>dao</strong>层代码，直接在<code>controller</code>层使用<code>jdbcTemplate</code>进行数据库操作，<strong>这种写法非常不规范，各位童鞋千万不要学哦</strong></p>
+<p><strong>UserController</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter5.controller;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/users"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">queryUsers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 查询所有用户</span></span><br><span class="line">        String sql = <span class="string">"select * from t_user"</span>;</span><br><span class="line">        <span class="keyword">return</span> jdbcTemplate.query(sql, <span class="keyword">new</span> Object[]&#123;&#125;, <span class="keyword">new</span> BeanPropertyRowMapper&lt;&gt;(User.class));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">getUser</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 根据主键ID查询</span></span><br><span class="line">        String sql = <span class="string">"select * from t_user where id = ?"</span>;</span><br><span class="line">        <span class="keyword">return</span> jdbcTemplate.queryForObject(sql, <span class="keyword">new</span> Object[]&#123;id&#125;, <span class="keyword">new</span> BeanPropertyRowMapper&lt;&gt;(User.class));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DeleteMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">delUser</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 根据主键ID删除用户信息</span></span><br><span class="line">        String sql = <span class="string">"DELETE FROM t_user WHERE id = ?"</span>;</span><br><span class="line">        <span class="keyword">return</span> jdbcTemplate.update(sql, id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addUser</span><span class="params">(@RequestBody User user)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 添加用户</span></span><br><span class="line">        String sql = <span class="string">"insert into t_user(username, password) values(?, ?)"</span>;</span><br><span class="line">        <span class="keyword">return</span> jdbcTemplate.update(sql, user.getUsername(), user.getPassword());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@PutMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">editUser</span><span class="params">(@PathVariable Long id, @RequestBody User user)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 根据主键ID修改用户信息</span></span><br><span class="line">        String sql = <span class="string">"UPDATE t_user SET username = ? ,password = ? WHERE id = ?"</span>;</span><br><span class="line">        <span class="keyword">return</span> jdbcTemplate.update(sql, user.getUsername(), user.getPassword(), id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>由于上面的接口是 restful 风格的接口，添加和修改无法通过浏览器完成，所以需要我们自己编写<code>junit</code>或者使用<code>postman</code>之类的工具。</p>
+<p>创建单元测试<code>Chapter4ApplicationTests</code>，通过<code>TestRestTemplate</code>模拟<strong>GET、POST、PUT、DELETE等请求操作</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shawn.chapter5;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Chapter5JdbcApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(Chapter5JdbcApplicationTests.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TestRestTemplate testRestTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testInsert</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        testRestTemplate.postForEntity(<span class="string">"http://localhost:"</span> + <span class="number">8080</span> + <span class="string">"/users"</span>, <span class="keyword">new</span> User(<span class="string">"user1"</span>, <span class="string">"pass1"</span>), Integer.class);</span><br><span class="line">        log.info(<span class="string">"[添加用户成功]\n"</span>);</span><br><span class="line">        <span class="comment">// TODO 如果是返回的集合,要用 exchange 而不是 getForEntity ，后者需要自己强转类型</span></span><br><span class="line">        <span class="keyword">final</span> List&lt;User&gt; body = testRestTemplate.exchange(<span class="string">"http://localhost:"</span> + <span class="number">8080</span> + <span class="string">"/users"</span>, HttpMethod.GET</span><br><span class="line">                , <span class="keyword">null</span>, <span class="keyword">new</span> ParameterizedTypeReference&lt;List&lt;User&gt;&gt;()&#123;&#125;).getBody();</span><br><span class="line">        log.info(<span class="string">"[查询所有] - [&#123;&#125;]\n"</span>, body);</span><br><span class="line">        <span class="keyword">int</span> userId = body.get(<span class="number">0</span>).getId();</span><br><span class="line">        ResponseEntity&lt;User&gt; response3 = testRestTemplate.getForEntity(<span class="string">"http://localhost:"</span> + <span class="number">8080</span> + <span class="string">"/users/&#123;id&#125;"</span>, User.class, userId);</span><br><span class="line">        log.info(<span class="string">"[主键查询] - [&#123;&#125;]\n"</span>, response3.getBody());</span><br><span class="line">        testRestTemplate.put(<span class="string">"http://localhost:"</span> + <span class="number">8080</span> + <span class="string">"/users/&#123;id&#125;"</span>, <span class="keyword">new</span> User(<span class="string">"user11"</span>, <span class="string">"pass11"</span>), userId);</span><br><span class="line">        log.info(<span class="string">"[修改用户成功]\n"</span>);</span><br><span class="line">        testRestTemplate.delete(<span class="string">"http://localhost:"</span> + <span class="number">8080</span> + <span class="string">"/users/&#123;id&#125;"</span>, userId);</span><br><span class="line">        log.info(<span class="string">"[删除用户成功]"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><p><a href="https://blog.battcn.com/2018/05/07/springboot/v2-orm-jdbc/" target="_blank" rel="noopener">crud部分参考博文</a></p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html#boot-features-rest-templates-test-utility" target="_blank" rel="noopener">TestRestTemplate官方文档</a></p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-using-jdbc-template" target="_blank" rel="noopener">jdbcTemplate官方文档</a></p>
+<p><a href="https://github.com/ShawnJim/spring-boot-learning/tree/master/chapter5-jdbc" target="_blank" rel="noopener">博客项目地址</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/jdbcTemplate/" rel="tag"># jdbcTemplate</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/07/26/初识SpringBoot丨第五篇_Spring-MVC配置及原理-拦截器应用/" rel="next" title="初识SpringBoot丨第五篇：Spring MVC配置及原理 & 拦截器应用">
+                <i class="fa fa-chevron-left"></i> 初识SpringBoot丨第五篇：Spring MVC配置及原理 & 拦截器应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2019/07/27/初识SpringBoot丨第七篇_Mybatis整合/" rel="prev" title="初识SpringBoot丨第七篇：Mybatis整合">
+                初识SpringBoot丨第七篇：Mybatis整合 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/kafu.jpg"
+      alt="John Doe">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#工程创建"><span class="nav-number">1.1.</span> <span class="nav-text">工程创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">1.2.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置原理"><span class="nav-number">1.3.</span> <span class="nav-text">配置原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目初识化-数据库操作"><span class="nav-number">2.</span> <span class="nav-text">项目初识化 数据库操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#具体操作"><span class="nav-number">2.1.</span> <span class="nav-text">具体操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.2.</span> <span class="nav-text">原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据源连接池"><span class="nav-number">3.</span> <span class="nav-text">数据源连接池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#具体操作-1"><span class="nav-number">3.1.</span> <span class="nav-text">具体操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自定义数据源配置类-amp-监控管理后台"><span class="nav-number">3.1.2.</span> <span class="nav-text">自定义数据源配置类&amp;监控管理后台</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CRUD操作"><span class="nav-number">4.</span> <span class="nav-text">CRUD操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据表"><span class="nav-number">4.1.</span> <span class="nav-text">数据表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#entity类"><span class="nav-number">4.2.</span> <span class="nav-text">entity类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#restful-风格接口"><span class="nav-number">4.3.</span> <span class="nav-text">restful 风格接口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">5.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关资料"><span class="nav-number">6.</span> <span class="nav-text">相关资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

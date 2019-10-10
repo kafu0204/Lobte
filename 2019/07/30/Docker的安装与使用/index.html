@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="使用容器可以更快地构建和部署新应用程序。Docker容器将软件及其依赖关系整合到一个标准化的软件开发单元中，包括运行所需的一切：代码，运行时，系统工具和库。这可以保证您的应用程序始终运行相同，并使协作变得像共享容器映像一样简单。">
+<meta name="keywords" content="docker,linux,mysql,tomcat,工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker的安装与使用">
+<meta property="og:url" content="http://yoursite.com/2019/07/30/Docker的安装与使用/index.html">
+<meta property="og:site_name" content="卡夫">
+<meta property="og:description" content="使用容器可以更快地构建和部署新应用程序。Docker容器将软件及其依赖关系整合到一个标准化的软件开发单元中，包括运行所需的一切：代码，运行时，系统工具和库。这可以保证您的应用程序始终运行相同，并使协作变得像共享容器映像一样简单。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-10T14:35:20.585Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker的安装与使用">
+<meta name="twitter:description" content="使用容器可以更快地构建和部署新应用程序。Docker容器将软件及其依赖关系整合到一个标准化的软件开发单元中，包括运行所需的一切：代码，运行时，系统工具和库。这可以保证您的应用程序始终运行相同，并使协作变得像共享容器映像一样简单。">
+  <link rel="canonical" href="http://yoursite.com/2019/07/30/Docker的安装与使用/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Docker的安装与使用 | 卡夫</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">卡夫</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+    </ul>
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/30/Docker的安装与使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/kafu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="卡夫">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">Docker的安装与使用
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-30 15:28:21" itemprop="dateCreated datePublished" datetime="2019-07-30T15:28:21+08:00">2019-07-30</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-10 22:35:20" itemprop="dateModified" datetime="2019-10-10T22:35:20+08:00">2019-10-10</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/中间件-工具/" itemprop="url" rel="index"><span itemprop="name">中间件/工具</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>使用容器可以更快地构建和部署新应用程序。Docker容器将软件及其依赖关系整合到一个标准化的软件开发单元中，包括运行所需的一切：代码，运行时，系统工具和库。这可以保证您的应用程序始终运行相同，并使协作变得像共享容器映像一样简单。</p>
+</blockquote>
+<a id="more"></a>
+
+
+<h2 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h2><p>​    目前，<a href="https://www.docker.com/" target="_blank" rel="noopener">Docker官网</a>上提供的docker是基于<code>centos7</code>系列安装方法。如果我们想在低于3.x内核的操作系统（比如<code>Centos6.7</code>）上装Docker最新版，势必要升级内核。但是想要在<code>Centos6.7</code>上安装可以安装较低版本的Docker。事实上，对于内核版本要大于3.10这个要求，是从<code>Docker1.8.2</code>版本开始的，<code>Docker</code>之前的版本是可以运行在较低内核版本之上的，比如<code>1.7.1</code>。</p>
+<h3 id="Centos-6-安装步骤"><a href="#Centos-6-安装步骤" class="headerlink" title="Centos 6 安装步骤"></a>Centos 6 安装步骤</h3><h4 id="查看centos-内核版本（版本要求-3-10-以上）"><a href="#查看centos-内核版本（版本要求-3-10-以上）" class="headerlink" title="查看centos 内核版本（版本要求 3.10 以上）"></a>查看centos 内核版本（版本要求 3.10 以上）</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -r</span><br></pre></td></tr></table></figure>
+
+<h4 id="升级内核版本（可选，版本低于3-10）"><a href="#升级内核版本（可选，版本低于3-10）" class="headerlink" title="升级内核版本（可选，版本低于3.10）"></a>升级内核版本（可选，版本低于3.10）</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum update</span><br><span class="line">//安装时间有点长~~  需要耐心等待0-0</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install docker</span><br></pre></td></tr></table></figure>
+
+<p>如报错：<code>No package docker available. Error: Nothing to do</code> 步骤如下^^!</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# sudo yum install epel-release</span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装docker</span></span><br><span class="line">[root@localhost ~]# yum install docker</span><br><span class="line"><span class="meta">#</span><span class="bash"> 验证安装</span></span><br><span class="line">[root@localhost ~]# docker --version</span><br><span class="line">docker - version 1.5</span><br><span class="line">Copyright 2003, Ben Jansens &lt;ben@orodu.net&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h4><ol>
+<li>列出你安装过的包</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yum list installed | grep docker</span></span><br><span class="line">yum list installed | grep docker</span><br><span class="line">docker-engine.x86_64   1.7.1-1.el7 @/docker-engine-1.7.1-1.el7.x86_64.rpm123</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>删除安装包</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo yum -y remove docker-engine.x86_64</span></span><br></pre></td></tr></table></figure>
+
+<p>启动</p>
+<p>额！！ 博主再按照教程安装时遇到启动失败的问题v_v,不过十分幸运的是博主很快就百度get了解决方案，再此感谢下<a href="https://www.cnblogs.com/ECJTUACM-873284962/" target="_blank" rel="noopener">Angel_Kitty</a>解决方案提供者，下面贴出问题与方案</p>
+<h4 id="遇到问题"><a href="#遇到问题" class="headerlink" title="遇到问题"></a>遇到问题</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# docker start</span><br><span class="line">Segmentation Fault or Critical Error encountered. Dumping core and aborting.</span><br></pre></td></tr></table></figure>
+
+<h5 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h5><h6 id="先移除docker"><a href="#先移除docker" class="headerlink" title="先移除docker"></a>先移除docker</h6><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@Sakura ~]<span class="comment"># yum remove docker</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="再移除docker-selinux-如果你之前有安装过的话"><a href="#再移除docker-selinux-如果你之前有安装过的话" class="headerlink" title="再移除docker-selinux(如果你之前有安装过的话)"></a>再移除docker-selinux(如果你之前有安装过的话)</h6><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@Sakura ~]<span class="comment"># yum remove docker-selinux</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="然后修改文件"><a href="#然后修改文件" class="headerlink" title="然后修改文件"></a>然后修改文件</h6><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@Sakura ~]<span class="comment"># vi /etc/yum.repos.d/docker.repo</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="直接填入如下内容"><a href="#直接填入如下内容" class="headerlink" title="直接填入如下内容"></a>直接填入如下内容</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[dockerrepo]</span><br><span class="line"></span><br><span class="line">name=Docker Repository</span><br><span class="line"></span><br><span class="line">baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/</span><br><span class="line"></span><br><span class="line">enabled=1</span><br><span class="line"></span><br><span class="line">gpgcheck=1</span><br><span class="line"></span><br><span class="line">gpgkey=https://yum.dockerproject.org/gpg</span><br></pre></td></tr></table></figure>
+
+<h6 id="然后启动安装："><a href="#然后启动安装：" class="headerlink" title="然后启动安装："></a>然后启动安装：</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@Sakura ~]# yum install docker-engine</span><br></pre></td></tr></table></figure>
+
+<p>作为依赖被安装: docker-engine-selinux.noarch 0:1.10.2-1.el7.centos</p>
+<p>然后启动docker服务：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@Sakura ~]# service docker start</span><br></pre></td></tr></table></figure>
+
+<p>返回如下状态码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Starting cgconfig service:                                 [  OK  ]</span><br><span class="line">Starting docker:                                           [  OK  ]</span><br></pre></td></tr></table></figure>
+
+<p>搞定！</p>
+<h4 id="设置自启动（centos-6-x环境）"><a href="#设置自启动（centos-6-x环境）" class="headerlink" title="设置自启动（centos 6.x环境）"></a>设置自启动（centos 6.x环境）</h4><h5 id="编辑-etc-rc-d-rc-local-文件"><a href="#编辑-etc-rc-d-rc-local-文件" class="headerlink" title="编辑 /etc/rc.d/rc.local 文件"></a>编辑 /etc/rc.d/rc.local 文件</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# vim /etc/rc.d/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>写入下面内容</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> This script will be executed *after* all the other init scripts.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> You can put your own initialization stuff <span class="keyword">in</span> here <span class="keyword">if</span> you don<span class="string">'t</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> want to <span class="keyword">do</span> the full Sys V style init stuff.</span></span><br><span class="line"></span><br><span class="line">touch /var/lock/subsys/local</span><br><span class="line">/etc/init.d/docker start</span><br></pre></td></tr></table></figure>
+
+<h3 id="Centos7-安装步骤"><a href="#Centos7-安装步骤" class="headerlink" title="Centos7 安装步骤"></a>Centos7 安装步骤</h3><p>centos 7 安装docker 相比6 来说 那可是相当简单了</p>
+<p><strong>详细如下：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> step 1: 安装必要的一些系统工具</span></span><br><span class="line">sudo yum install -y yum-utils device-mapper-persistent-data lvm2</span><br><span class="line"><span class="meta">#</span><span class="bash"> Step 2: 添加软件源信息</span></span><br><span class="line">sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br><span class="line"><span class="meta">#</span><span class="bash"> Step 3: 更新并安装 Docker-CE</span></span><br><span class="line">sudo yum makecache fast</span><br><span class="line">sudo yum -y install docker-ce</span><br><span class="line"><span class="meta">#</span><span class="bash"> Step 4: 开启Docker服务</span></span><br><span class="line">sudo service docker start</span><br><span class="line"></span><br><span class="line">注意：其他注意事项在下面的注释中</span><br><span class="line"><span class="meta">#</span><span class="bash"> 官方软件源默认启用了最新的软件，您可以通过编辑软件源的方式获取各个版本的软件包。例如官方并没有将测试版本的软件源置为可用，你可以通过以下方式开启。同理可以开启各种测试版本等。</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vim /etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   将 [docker-ce-test] 下方的 enabled=0 修改为 enabled=1</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装指定版本的Docker-CE:</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Step 1: 查找Docker-CE的版本:</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> yum list docker-ce.x86_64 --showduplicates | sort -r</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   Loading mirror speeds from cached hostfile</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   Loaded plugins: branch, fastestmirror, langpacks</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   docker-ce.x86_64            17.03.1.ce-1.el7.centos            docker-ce-stable</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   docker-ce.x86_64            17.03.1.ce-1.el7.centos            @docker-ce-stable</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   docker-ce.x86_64            17.03.0.ce-1.el7.centos            docker-ce-stable</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   Available Packages</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Step2 : 安装指定版本的Docker-CE: (VERSION 例如上面的 17.03.0.ce.1-1.el7.centos)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo yum -y install docker-ce-[VERSION]</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意：在某些版本之后，docker-ce安装出现了其他依赖包，如果安装失败的话请关注错误信息。例如 docker-ce 17.03 之后，需要先安装 docker-ce-selinux。</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> yum list docker-ce-selinux- --showduplicates | sort -r</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo yum -y install docker-ce-selinux-[VERSION]</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 通过经典网络、VPC网络内网安装时，用以下命令替换Step 2中的命令</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 经典网络：</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo yum-config-manager --add-repo http://mirrors.aliyuncs.com/docker-ce/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> VPC网络：</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo yum-config-manager --add-repo http://mirrors.could.aliyuncs.com/docker-ce/linux/centos/docker-ce.repo</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="安装校验"><a href="#安装校验" class="headerlink" title="安装校验"></a>安装校验</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">root@iZbp12adskpuoxodbkqzjfZ:$ docker version</span><br><span class="line">Client:</span><br><span class="line"> Version:      17.03.0-ce</span><br><span class="line"> API version:  1.26</span><br><span class="line"> Go version:   go1.7.5</span><br><span class="line"> Git commit:   3a232c8</span><br><span class="line"> Built:        Tue Feb 28 07:52:04 2017</span><br><span class="line"> OS/Arch:      linux/amd64</span><br><span class="line"></span><br><span class="line">Server:</span><br><span class="line"> Version:      17.03.0-ce</span><br><span class="line"> API version:  1.26 (minimum version 1.12)</span><br><span class="line"> Go version:   go1.7.5</span><br><span class="line"> Git commit:   3a232c8</span><br><span class="line"> Built:        Tue Feb 28 07:52:04 2017</span><br><span class="line"> OS/Arch:      linux/amd64</span><br><span class="line"> Experimental: false</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://yq.aliyun.com/articles/110806?spm=5176.8351553.0.0.3c4e1991uA8VE4" target="_blank" rel="noopener">文档地址</a></p>
+<h2 id="Docker-使用"><a href="#Docker-使用" class="headerlink" title="Docker 使用"></a>Docker 使用</h2><h3 id="使用阿里云镜像加速"><a href="#使用阿里云镜像加速" class="headerlink" title="使用阿里云镜像加速"></a>使用阿里云镜像加速</h3><p>由于网络原因，我们在pull Image 的时候，从Docker Hub上下载会很慢。</p>
+<p>修改文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/docker</span><br><span class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-&apos;EOF&apos;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https://a3zqcvhc.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line"># https://a3zqcvhc.mirror.aliyuncs.com 由自己去阿里云官网注册获取</span><br><span class="line">https://cr.console.aliyun.com/cn-beijing/instances/mirrors</span><br></pre></td></tr></table></figure>
+
+<p><strong>或者使用daocloud仓库</strong></p>
+<p> <a href="https://www.daocloud.io/mirror#accelerator-doc" target="_blank" rel="noopener">仓库地址</a></p>
+<h3 id="镜像操作"><a href="#镜像操作" class="headerlink" title="镜像操作"></a>镜像操作</h3><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>检索</td>
+<td>docker  search 关键字  eg：docker  search redis</td>
+<td>我们经常去docker  hub上检索镜像的详细信息，如镜像的TAG。</td>
+</tr>
+<tr>
+<td>拉取</td>
+<td>docker pull 镜像名:tag</td>
+<td>:tag是可选的，tag表示标签，多为软件的版本，默认是latest</td>
+</tr>
+<tr>
+<td>列表</td>
+<td>docker images</td>
+<td>查看所有本地镜像</td>
+</tr>
+<tr>
+<td>删除</td>
+<td>docker rmi image-id</td>
+<td>删除指定的本地镜像</td>
+</tr>
+</tbody></table>
+<p><a href="https://hub.docker.com/" target="_blank" rel="noopener">https://hub.docker.com/</a></p>
+<h3 id="容器操作"><a href="#容器操作" class="headerlink" title="容器操作"></a>容器操作</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">1、搜索镜像</span><br><span class="line">[root@localhost ~]# docker search tomcat</span><br><span class="line">2、拉取镜像</span><br><span class="line">[root@localhost ~]# docker pull tomcat</span><br><span class="line">3、根据镜像启动容器</span><br><span class="line">docker run --name mytomcat -d tomcat:latest</span><br><span class="line">4、docker ps  </span><br><span class="line">查看运行中的容器</span><br><span class="line">5、 停止运行中的容器</span><br><span class="line">docker stop  容器的id</span><br><span class="line">6、查看所有的容器</span><br><span class="line">docker ps -a</span><br><span class="line">7、启动容器</span><br><span class="line">docker start 容器id</span><br><span class="line">8、删除一个容器</span><br><span class="line"> docker rm 容器id</span><br><span class="line">9、启动一个做了端口映射的tomcat</span><br><span class="line">[root@localhost ~]# docker run -d -p 8888:8080 tomcat</span><br><span class="line">-d：后台运行</span><br><span class="line">-p: 将主机的端口映射到容器的一个端口    主机端口:容器内部的端口</span><br><span class="line"></span><br><span class="line">10、为了演示简单关闭了linux的防火墙</span><br><span class="line">service firewalld status ；查看防火墙状态</span><br><span class="line">service firewalld stop：关闭防火墙</span><br><span class="line">11、查看容器的日志</span><br><span class="line">docker logs container-name/container-id</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">如果无法还是无法访问到tomcat 可以试试curl 127.0.0.1:port</span></span><br></pre></td></tr></table></figure>
+
+<p>更多命令参看<br><a href="https://docs.docker.com/engine/reference/commandline/docker/" target="_blank" rel="noopener">各镜像文档</a></p>
+<h3 id="安装MySQL示例"><a href="#安装MySQL示例" class="headerlink" title="安装MySQL示例"></a>安装MySQL示例</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql</span><br></pre></td></tr></table></figure>
+
+<h4 id="错误的启动"><a href="#错误的启动" class="headerlink" title="错误的启动"></a>错误的启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# docker run --name mysql01 -d mysql</span><br><span class="line">42f09819908bb72dd99ae19e792e0a5d03c48638421fa64cce5f8ba0f40f5846</span><br><span class="line"></span><br><span class="line">mysql退出了</span><br><span class="line">[root@localhost ~]# docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES</span><br><span class="line">42f09819908b        mysql               "docker-entrypoint.sh"   34 seconds ago      Exited (1) 33 seconds ago                            mysql01</span><br><span class="line">538bde63e500        tomcat              "catalina.sh run"        About an hour ago   Exited (143) About an hour ago                       compassionate_</span><br><span class="line">goldstine</span><br><span class="line">c4f1ac60b3fc        tomcat              "catalina.sh run"        About an hour ago   Exited (143) About an hour ago                       lonely_fermi</span><br><span class="line">81ec743a5271        tomcat              "catalina.sh run"        About an hour ago   Exited (143) About an hour ago                       sick_ramanujan</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//错误日志</span><br><span class="line">[root@localhost ~]# docker logs 42f09819908b</span><br><span class="line">error: database is uninitialized and password option is not specified </span><br><span class="line">  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD；这个三个参数必须指定一个</span><br></pre></td></tr></table></figure>
+
+<h4 id="正确的启动"><a href="#正确的启动" class="headerlink" title="正确的启动"></a>正确的启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# docker run --name mysql01 -e MYSQL_ROOT_PASSWORD=123456 -d mysql</span><br><span class="line">b874c56bec49fb43024b3805ab51e9097da779f2f572c22c695305dedd684c5f</span><br><span class="line">[root@localhost ~]# docker ps</span><br><span class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES</span><br><span class="line">b874c56bec49        mysql               "docker-entrypoint.sh"   4 seconds ago       Up 3 seconds        3306/tcp            mysql01</span><br></pre></td></tr></table></figure>
+
+<h4 id="做了端口映射"><a href="#做了端口映射" class="headerlink" title="做了端口映射"></a>做了端口映射</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# docker run -p 3306:3306 --name mysql02 -e MYSQL_ROOT_PASSWORD=123456 -d mysql</span><br><span class="line">ad10e4bc5c6a0f61cbad43898de71d366117d120e39db651844c0e73863b9434</span><br><span class="line">[root@localhost ~]# docker ps</span><br><span class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES</span><br><span class="line">ad10e4bc5c6a        mysql               "docker-entrypoint.sh"   4 seconds ago       Up 2 seconds        0.0.0.0:3306-&gt;3306/tcp   mysql02</span><br></pre></td></tr></table></figure>
+
+<h4 id="几个其他的高级操作"><a href="#几个其他的高级操作" class="headerlink" title="几个其他的高级操作"></a>几个其他的高级操作</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run --name mysql03 -v /conf/mysql:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</span><br><span class="line">把主机的/conf/mysql文件夹挂载到 mysqldocker容器的/etc/mysql/conf.d文件夹里面</span><br><span class="line">改mysql的配置文件就只需要把mysql配置文件放在自定义的文件夹下（/conf/mysql）</span><br><span class="line"></span><br><span class="line">---- 分割线 ----</span><br><span class="line"></span><br><span class="line">docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</span><br><span class="line">指定mysql的一些配置参数</span><br></pre></td></tr></table></figure>
+
+<h4 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h4><blockquote>
+<p>出现问题 ，如果mysql安装版本是8.0以上的话 用navicat连接可能会报2059 错误 ，需要注意</p>
+</blockquote>
+<p><strong>解决方案：</strong></p>
+<p>主要有2种方式。</p>
+<ol>
+<li>自定义配置文件，并 mount 到 container里。这样在MySQL启动时，会加载我们的配置文件。 </li>
+<li>启动MySQL容器是传入CMD，通过命令修改默认加密规则</li>
+</ol>
+<p><strong>8.0其他注意配置</strong></p>
+<p>进行授权远程连接(注意mysql 8.0跟之前的授权方式不同)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO &apos;root&apos;@&apos;%&apos;WITH GRANT OPTION; </span><br><span class="line"></span><br><span class="line">mysql&gt;FLUSH PRIVIL</span><br></pre></td></tr></table></figure>
+
+<p>更改加密规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;password&apos; PASSWORD EXPIRE NEVER;</span><br></pre></td></tr></table></figure>
+
+<p>更新root用户密码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER &apos;root&apos;@&apos;%&apos; IDENTIFIED WITH mysql_native_password BY &apos;password&apos;;</span><br></pre></td></tr></table></figure>
+
+<p>刷新权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p>OK，设置完成，再次使用 Navicat 连接数据库</p>
+<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><p><a href="https://docs.docker.com/" target="_blank" rel="noopener">docker官方文档</a></p>
+<p><a href="https://www.cnblogs.com/zl1991/p/10531726.html" target="_blank" rel="noopener">参考博客-鸭子船长</a></p>
+<p><a href="https://yq.aliyun.com/articles/110806?spm=5176.8351553.0.0.3c4e1991uA8VE4" target="_blank" rel="noopener">阿里云相关文档</a></p>
+<p><a href="https://blog.csdn.net/weixin_43674794/article/details/90546717" target="_blank" rel="noopener">mysql问题解决</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+            <a href="/tags/tomcat/" rel="tag"># tomcat</a>
+          
+            <a href="/tags/工具/" rel="tag"># 工具</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/07/30/初识SpringBoot丨第八篇_SpringDataJpa整合/" rel="next" title="初识SpringBoot丨第八篇：SpringDataJpa整合">
+                <i class="fa fa-chevron-left"></i> 初识SpringBoot丨第八篇：SpringDataJpa整合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2019/07/31/centos升级内核版本/" rel="prev" title="centos升级内核版本">
+                centos升级内核版本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/kafu.jpg"
+      alt="John Doe">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Docker"><span class="nav-number">1.</span> <span class="nav-text">安装Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Centos-6-安装步骤"><span class="nav-number">1.1.</span> <span class="nav-text">Centos 6 安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#查看centos-内核版本（版本要求-3-10-以上）"><span class="nav-number">1.1.1.</span> <span class="nav-text">查看centos 内核版本（版本要求 3.10 以上）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#升级内核版本（可选，版本低于3-10）"><span class="nav-number">1.1.2.</span> <span class="nav-text">升级内核版本（可选，版本低于3.10）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装"><span class="nav-number">1.1.3.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#卸载"><span class="nav-number">1.1.4.</span> <span class="nav-text">卸载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遇到问题"><span class="nav-number">1.1.5.</span> <span class="nav-text">遇到问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#解决方案"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#先移除docker"><span class="nav-number">1.1.5.1.1.</span> <span class="nav-text">先移除docker</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#再移除docker-selinux-如果你之前有安装过的话"><span class="nav-number">1.1.5.1.2.</span> <span class="nav-text">再移除docker-selinux(如果你之前有安装过的话)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#然后修改文件"><span class="nav-number">1.1.5.1.3.</span> <span class="nav-text">然后修改文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#直接填入如下内容"><span class="nav-number">1.1.5.1.4.</span> <span class="nav-text">直接填入如下内容</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#然后启动安装："><span class="nav-number">1.1.5.1.5.</span> <span class="nav-text">然后启动安装：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#设置自启动（centos-6-x环境）"><span class="nav-number">1.1.6.</span> <span class="nav-text">设置自启动（centos 6.x环境）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#编辑-etc-rc-d-rc-local-文件"><span class="nav-number">1.1.6.1.</span> <span class="nav-text">编辑 /etc/rc.d/rc.local 文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Centos7-安装步骤"><span class="nav-number">1.2.</span> <span class="nav-text">Centos7 安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装校验"><span class="nav-number">1.2.1.</span> <span class="nav-text">安装校验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-使用"><span class="nav-number">2.</span> <span class="nav-text">Docker 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用阿里云镜像加速"><span class="nav-number">2.1.</span> <span class="nav-text">使用阿里云镜像加速</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#镜像操作"><span class="nav-number">2.2.</span> <span class="nav-text">镜像操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器操作"><span class="nav-number">2.3.</span> <span class="nav-text">容器操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装MySQL示例"><span class="nav-number">2.4.</span> <span class="nav-text">安装MySQL示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#错误的启动"><span class="nav-number">2.4.1.</span> <span class="nav-text">错误的启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正确的启动"><span class="nav-number">2.4.2.</span> <span class="nav-text">正确的启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#做了端口映射"><span class="nav-number">2.4.3.</span> <span class="nav-text">做了端口映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#几个其他的高级操作"><span class="nav-number">2.4.4.</span> <span class="nav-text">几个其他的高级操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可能出现的问题"><span class="nav-number">2.4.5.</span> <span class="nav-text">可能出现的问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关资料"><span class="nav-number">3.</span> <span class="nav-text">相关资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
